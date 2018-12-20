@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -16,6 +17,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        
+        window = UIWindow(frame:UIScreen.main.bounds)
+        window?.makeKeyAndVisible()
+        
+        let layout = UICollectionViewFlowLayout()
+        window?.rootViewController = UINavigationController(rootViewController: HomeController(collectionViewLayout: layout))
+        
+
+//        UINavigationBar.appearance().barTintColor = UIColor(red: 230/255, green: 32/255, blue: 31/255, alpha: 1)
+        UINavigationBar.appearance().barTintColor = UIColor.rgb(red: 230, green: 32, blue: 31, alpha: 1)
+        
+        // this gets rid of the black bar underneath the navigation bar
+        UINavigationBar.appearance().shadowImage = UIImage()
+        UINavigationBar.appearance().setBackgroundImage(UIImage(),for: .default)
+        
+        let statusBarBackgroundView = UIView()
+        statusBarBackgroundView.backgroundColor = UIColor.rgb(red: 193, green: 31, blue: 31, alpha: 1)
+        
+        window?.addSubview(statusBarBackgroundView)
+        window?.addConstraintswithFormat(format: "H:|[v0]|", views: statusBarBackgroundView)
+        window?.addConstraintswithFormat(format: "V:|[v0(20)]", views: statusBarBackgroundView)
+        
+        UIApplication.shared.statusBarStyle = .lightContent
+
         return true
     }
 
