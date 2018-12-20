@@ -38,6 +38,8 @@ class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
 //        let setting = Setting(name: "Settings", imageName: "devilIcon")
         return  [Setting(name: "Settings", imageName: "devilIcon"), Setting(name: "Terms and Privacy", imageName: "devilIcon"), Setting(name: "Send Feedback", imageName: "wineIcon"), Setting(name: "Help", imageName: "devilIcon"), Setting(name: "switch accounts", imageName: "devilIcon"),Setting(name: "cancel", imageName: "devilIcon")]
     }()
+  
+  var homeController: HomeController?
     
     func showSettings(){
         
@@ -68,18 +70,49 @@ class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
             
         }
     }
-    
-    @objc func handleDismiss(){
-        UIView.animate(withDuration: 0.5) {
-            self.blackView.alpha = 0
-            
-            if let window = UIApplication.shared.keyWindow {
-                
-                self.collectionView.frame = CGRect(x: 0, y: window.frame.height, width: self.collectionView.frame.width, height: self.collectionView.frame.height)
-            }
+  
+  @objc func handleDismiss(setting: NSObject){
+    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+      
+      UIView.animate(withDuration: 0.5) {
+        self.blackView.alpha = 0
+        
+        if let window = UIApplication.shared.keyWindow {
+          
+          self.collectionView.frame = CGRect(x: 0, y: window.frame.height, width: self.collectionView.frame.width, height: self.collectionView.frame.height)
         }
+      }
+      
+    }) { (Bool) in
+      
+//      something fucky is going on here. This is different from the tutorial because of swift 4 syntax
+      if setting is Setting && (setting as! Setting).name != "cancel"{
+        self.homeController?.showControllerForSetting(setting: setting as! Setting)
+      }
     }
+  }
     
+//  @objc func handleDismiss(setting: Setting){
+//      UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+//
+//        UIView.animate(withDuration: 0.5) {
+//          self.blackView.alpha = 0
+//
+//          if let window = UIApplication.shared.keyWindow {
+//
+//            self.collectionView.frame = CGRect(x: 0, y: window.frame.height, width: self.collectionView.frame.width, height: self.collectionView.frame.height)
+//          }
+//        }
+//
+//      }) { (Bool) in
+//
+//
+//        if setting.name != "" && setting.name != "cancel"{
+//          self.homeController?.showControllerForSetting(setting: setting)
+//        }
+//      }
+//    }
+  
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return settings.count
@@ -102,8 +135,14 @@ class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
+  
+//Upon hitting a settings option, this lowers the setting menu and enters a new screen
+  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     
+    let setting = self.settings[indexPath.item]
+    handleDismiss(setting: setting)
     
+  }
     override init() {
         super.init()
         

@@ -10,10 +10,13 @@ import UIKit
 
 
 class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
-    
+  
+//  create an optional array of Video objects
     var videos: [Video]?
     
     func fetchVideos(){
+      
+//      this URL is where the data is stored
         let url = URL(string: "https://s3-us-west-2.amazonaws.com/youtubeassets/home.json")
       
         URLSession.shared.dataTask(with: url!) { (data, response, error) in
@@ -99,12 +102,28 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
     }
     
 //    this is structured so the settings launcher is fully responsile for this function, not the HomeController
-    let settingsLauncher = SettingsLauncher()
+// code only runs once if the settingsLauncher
+  lazy var settingsLauncher: SettingsLauncher = {
+    let launcher = SettingsLauncher()
+    launcher.homeController = self
+    return launcher
+  }()
     
     @objc func handleMore(){
+      settingsLauncher.homeController = self
         settingsLauncher.showSettings()
-    }
     
+    }
+  
+  func showControllerForSetting(setting: Setting){
+    let dummySettingViewController = UIViewController()
+    dummySettingViewController.view.backgroundColor = UIColor.white
+    dummySettingViewController.title = setting.name
+    navigationController?.navigationBar.tintColor = UIColor.white
+//    this is how you change the title color to white
+    navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
+    navigationController?.pushViewController(dummySettingViewController, animated: true)
+  }
     
     let menuBar: MenuBar = {
         let mb = MenuBar()
