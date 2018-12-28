@@ -72,7 +72,7 @@ class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
     }
   
   @objc func handleDismiss(setting: NSObject){
-    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+    UIView.animate(withDuration:  0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
       
       UIView.animate(withDuration: 0.5) {
         self.blackView.alpha = 0
