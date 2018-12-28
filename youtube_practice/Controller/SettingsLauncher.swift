@@ -11,13 +11,21 @@ import UIKit
 
 // creating a Model Object to represent each option in the settings launcher
 class Setting: NSObject {
-    let name: String
+    let name: SettingName
     let imageName: String
     
-    init(name: String, imageName:String ){
+    init(name: SettingName, imageName:String ){
         self.name = name
         self.imageName = imageName
     }
+}
+
+enum SettingName: String{
+  case Settings = "Settings"
+  case TermsPrivacy = "Terms and Privacy"
+  case SendFeedback = "Send Feedback"
+  case SwitchAccounts = "Switch Accounts"
+  case Cancel = "Cancel"
 }
 
 class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -35,8 +43,15 @@ class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
     let cellHeight:CGFloat = 50.0
     
     let settings: [Setting] = {
-//        let setting = Setting(name: "Settings", imageName: "devilIcon")
-        return  [Setting(name: "Settings", imageName: "devilIcon"), Setting(name: "Terms and Privacy", imageName: "devilIcon"), Setting(name: "Send Feedback", imageName: "wineIcon"), Setting(name: "Help", imageName: "devilIcon"), Setting(name: "switch accounts", imageName: "devilIcon"),Setting(name: "cancel", imageName: "devilIcon")]
+      let cancelSetting = Setting(name: .Cancel, imageName: "devilIcon")
+      let settingsSetting = Setting(name: .Settings, imageName: "devilIcon")
+      let termsSetting = Setting(name: .TermsPrivacy, imageName: "devilIcon")
+      let feedbackSetting = Setting(name: .SendFeedback, imageName: "devilIcon")
+      let switchAccountSetting = Setting(name: .SwitchAccounts, imageName: "devilIcon")
+      
+      return [settingsSetting, termsSetting, feedbackSetting, switchAccountSetting, cancelSetting]
+
+//        return  [Setting(name: "Settings", imageName: "devilIcon"), Setting(name: "Terms and Privacy", imageName: "devilIcon"), Setting(name: "Send Feedback", imageName: "wineIcon"), Setting(name: "Help", imageName: "devilIcon"), Setting(name: "switch accounts", imageName: "devilIcon"),cancelSetting]
     }()
   
   var homeController: HomeController?
@@ -71,7 +86,7 @@ class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
         }
     }
   
-  @objc func handleDismiss(setting: NSObject){
+  @objc func handleDismiss(setting: Setting){
     UIView.animate(withDuration:  0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
       
       UIView.animate(withDuration: 0.5) {
@@ -85,35 +100,18 @@ class SettingsLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDe
       
     }) { (Bool) in
       
-//      something fucky is going on here. This is different from the tutorial because of swift 4 syntax
-      if setting is Setting && (setting as! Setting).name != "cancel"{
+      if setting.name != .Cancel{
         self.homeController?.showControllerForSetting(setting: setting as! Setting)
       }
+      
+//      something weird is going on here. This is different from the tutorial because of swift 4 syntax
+//      if setting is Setting && (setting as! Setting).name != "Cancel"{
+//        self.homeController?.showControllerForSetting(setting: setting as! Setting)
+//      }
     }
   }
     
-//  @objc func handleDismiss(setting: Setting){
-//      UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-//
-//        UIView.animate(withDuration: 0.5) {
-//          self.blackView.alpha = 0
-//
-//          if let window = UIApplication.shared.keyWindow {
-//
-//            self.collectionView.frame = CGRect(x: 0, y: window.frame.height, width: self.collectionView.frame.width, height: self.collectionView.frame.height)
-//          }
-//        }
-//
-//      }) { (Bool) in
-//
-//
-//        if setting.name != "" && setting.name != "cancel"{
-//          self.homeController?.showControllerForSetting(setting: setting)
-//        }
-//      }
-//    }
-  
-    
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return settings.count
     }

@@ -118,7 +118,7 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
   func showControllerForSetting(setting: Setting){
     let dummySettingViewController = UIViewController()
     dummySettingViewController.view.backgroundColor = UIColor.white
-    dummySettingViewController.title = setting.name
+    dummySettingViewController.title = setting.name.rawValue
     navigationController?.navigationBar.tintColor = UIColor.white
 //    this is how you change the title color to white
     navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
