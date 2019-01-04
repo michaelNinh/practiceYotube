@@ -13,52 +13,16 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
   
 //  create an optional array of Video objects
     var videos: [Video]?
-    
-    func fetchVideos(){
+  
+  
+//  this leverages all the ApiService
+  func fetchVideos(){
+    Apiservice.sharedInstance.fetchVideo { (videos: [Video]) in
+      self.videos = videos
+      self.collectionView?.reloadData()
       
-//      this URL is where the data is stored
-        let url = URL(string: "https://s3-us-west-2.amazonaws.com/youtubeassets/home.json")
-      
-        URLSession.shared.dataTask(with: url!) { (data, response, error) in
-            
-            if error != nil {
-                print(error!)
-                return
-            }
-//            pattern to attempt parse JSON
-//            the following DO block creates VIDEO + CHANNELS objects to pass over to videoCell
-            do {
-//                JSON is an array of dictionarys
-                let json = try JSONSerialization.jsonObject(with: data!, options: .mutableContainers)
-                
-                self.videos = [Video]()
-                
-//                downcast json objects as an array of dictionaryObjects
-                for dictionary in json as! [[String: AnyObject]]{
-                    let video = Video()
-                    video.title = dictionary["title"] as? String
-                    video.thumbnailImageName = dictionary["thumbnail_image_name"] as? String
-                    
-//                    channel information is stored as a sub dict inside the main dict
-                    let channelDictionary = dictionary["channel"] as!  [String:AnyObject]
-                    
-                    let channel = Channel()
-                    channel.profileImageName = channelDictionary["profile_image_name"] as? String
-                    channel.name = channelDictionary["name"] as? String
-                    
-                    video.channel = channel
-                    
-                    self.videos?.append(video)
-                }
-//                !!! this is apparently a very important step. Need to get back onto the main threa
-                DispatchQueue.main.async {
-                    self.collectionView?.reloadData()
-                }
-            } catch let jsonError {
-                print(jsonError)
-            }
-        }.resume()
-        }
+    }
+  }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,7 +32,7 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         navigationController?.navigationBar.isTranslucent = false
 
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width - 32, height: view.frame.height))
-        titleLabel.text = "home"
+        titleLabel.text = "  Home"
         titleLabel.textColor = UIColor.white
         titleLabel.font = UIFont.systemFont(ofSize: 20)
     
@@ -131,9 +95,21 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
     }()
     
     private func setupMenuBar(){
+        navigationController?.hidesBarsOnSwipe = true
+      
+      let redView = UIView()
+      redView.backgroundColor = UIColor.rgb(red: 230, green: 32, blue: 31, alpha: 1)
+      view.addSubview(redView)
+      
+      view.addConstraintswithFormat(format: "H:|[v0]|", views: redView)
+      view.addConstraintswithFormat(format: "V:|[v0(50)]|", views: redView)
+      
         view.addSubview(menuBar)
         view.addConstraintswithFormat(format: "H:|[v0]|", views: menuBar)
-        view.addConstraintswithFormat(format: "V:|[v0(50)]", views: menuBar)
+        view.addConstraintswithFormat(format: "V:[v0(50)]", views: menuBar)
+
+      //      this somehow handles the swipe up behavior
+      menuBar.topAnchor.constraintEqualToSystemSpacingBelow(topLayoutGuide.bottomAnchor, multiplier: 0).isActive = true
     }
 
     

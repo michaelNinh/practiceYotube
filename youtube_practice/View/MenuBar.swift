@@ -36,9 +36,43 @@ class MenuBar: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UIC
 //        this code sets up a single highlighted option right on load up (index = 1 is already selected)
         let selectedIndexPath = IndexPath(item: 0, section: 0)
         collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: .left)
-        
+      
+      setupHorizontalBar()
         
     }
+  
+//  this is needed for animating the bar. not sure why
+  var horizontalBarLeftAnchorConstraint:NSLayoutConstraint?
+  
+  func setupHorizontalBar(){
+    let horizontalBarView = UIView()
+    horizontalBarView.backgroundColor = UIColor(white: 0.8, alpha: 1)
+    horizontalBarView.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(horizontalBarView)
+    
+//    this bunch of code creates the white bar that animates.
+    horizontalBarLeftAnchorConstraint = horizontalBarView.leftAnchor.constraintEqualToSystemSpacingAfter(self.leftAnchor, multiplier: 0)
+    horizontalBarLeftAnchorConstraint?.isActive = true
+    
+    horizontalBarView.bottomAnchor.constraintEqualToSystemSpacingBelow(self.bottomAnchor, multiplier: 0).isActive = true
+    horizontalBarView.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1/4).isActive = true
+    horizontalBarView.heightAnchor.constraint(equalToConstant: 8).isActive = true
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    print(indexPath.item)
+//    needed to divde by 4 because frame.width is the entire width of the screen. Causes the bar to move off screen?
+    let x = CGFloat(indexPath.item) * frame.width/4
+    horizontalBarLeftAnchorConstraint?.constant = x
+    
+//    how to handle the nice spring animation 
+    UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+      self.layoutIfNeeded()
+    }, completion: nil)
+    
+    
+    
+  }
     
 //    this is usually always one section
     func numberOfSections(in collectionView: UICollectionView) -> Int {
