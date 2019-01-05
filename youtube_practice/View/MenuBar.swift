@@ -22,6 +22,9 @@ class MenuBar: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UIC
     
     let cellId = "cellId"
     let imageNames = ["devilIcon", "snorkelIcon", "wineIcon", "playstationIcon"]
+  
+//  init a homeController object so we can reference viewDidScroll to move the horizontal navigation
+    var homeController: HomeController?
     
     override init(frame: CGRect){
         super.init(frame:frame)
@@ -60,18 +63,22 @@ class MenuBar: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UIC
   }
   
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    print(indexPath.item)
-//    needed to divde by 4 because frame.width is the entire width of the screen. Causes the bar to move off screen?
-    let x = CGFloat(indexPath.item) * frame.width/4
-    horizontalBarLeftAnchorConstraint?.constant = x
     
-//    how to handle the nice spring animation 
-    UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-      self.layoutIfNeeded()
-    }, completion: nil)
+//    print(indexPath.item)
+////    needed to divde by 4 because frame.width is the entire width of the screen. Causes the bar to move off screen?
+//    let x = CGFloat(indexPath.item) * frame.width/4
+//    horizontalBarLeftAnchorConstraint?.constant = x
+//    
+////    how to handle the nice spring animation 
+//    UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+//      self.layoutIfNeeded()
+//    }, completion: nil)
+    
+//    this is used to move the horizontal selector bar
+    homeController?.scrollToMenuIndex(menuIndex: indexPath.item)
     
     
-    
+
   }
     
 //    this is usually always one section
