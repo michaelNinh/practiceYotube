@@ -12,25 +12,16 @@ import UIKit
 class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
   
 //  create an optional array of Video objects
-    var videos: [Video]?
-  
+
   let cellId = "cellId"
+  let trendingCellId = "trendingCellId"
+  let subscriptionCellId = "subscriptionCell"
   
   
 //  this leverages all the ApiService
-  func fetchVideos(){
-    Apiservice.sharedInstance.fetchVideo { (videos: [Video]) in
-      self.videos = videos
-      self.collectionView?.reloadData()
-      
-    }
-  }
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        fetchVideos()
-        
+      
         navigationController?.navigationBar.isTranslucent = false
 
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width - 32, height: view.frame.height))
@@ -55,12 +46,11 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
 //      this eliminates space between all cells
       flowLayout.minimumLineSpacing = 0
     }
-    
     collectionView?.backgroundColor = UIColor.white
     
-//    collectionView?.register(VideoCell.self, forCellWithReuseIdentifier: "cellId")
-    
-    collectionView?.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellId)
+    collectionView?.register(FeedCell.self, forCellWithReuseIdentifier: cellId)
+    collectionView?.register(TrendingCell.self, forCellWithReuseIdentifier: trendingCellId)
+    collectionView?.register(SubscriptionCell.self, forCellWithReuseIdentifier: subscriptionCellId)
     
     //        menu bar is 50px tall
     collectionView?.contentInset = UIEdgeInsets(top: 50, left: 0, bottom: 0, right: 0)
@@ -89,6 +79,14 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
   func scrollToMenuIndex(menuIndex: Int){
     let indexPath = NSIndexPath(item: menuIndex, section: 0)
     collectionView?.scrollToItem(at: indexPath as IndexPath, at: [], animated: true)
+    
+    setTitleForIndex(index: menuIndex)
+  }
+  
+  private func setTitleForIndex(index: Int){
+    if let titleLabel = navigationItem.titleView as? UILabel{
+      titleLabel.text = "  \(titles[index])"
+    }
   }
     
 //    this is structured so the settings launcher is fully responsile for this function, not the HomeController
@@ -147,13 +145,18 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
   }
   
   
-//  this handle highlighting the selected page. Not totally sure how it works. Reference Episode 12. 
+  let titles = ["Home","Trending","Subscriptions","Account",]
+  
+//  this handle highlighting the selected page. Not totally sure how it works. Reference Episode 12.
   override func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
     
     print(targetContentOffset.pointee.x / view.frame.width)
     let index = targetContentOffset.pointee.x / view.frame.width
     let indexPath = NSIndexPath(item: Int(index), section: 0)
     menuBar.collectionView.selectItem(at: indexPath as IndexPath, animated: true, scrollPosition: [])
+    
+//    this is how you handle changing the Title as the navigation changes
+    setTitleForIndex(index: Int(index))
     
   }
   
@@ -162,47 +165,29 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
   }
   
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath)
+//    this is where different feeds are loaded 0 == home, 1 == trending, etc...fires off the correct fetch when on the page
     
-    let colors: [UIColor] = [UIColor.blue, UIColor.orange, UIColor.red, UIColor.green]
+    let identifier:String
+    if indexPath.item == 1{
+      identifier = trendingCellId
+    } else if indexPath.item == 2{
+      identifier = subscriptionCellId
+    } else{
+      identifier = cellId
+    }
     
-    cell.backgroundColor = colors[indexPath.item]
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath)
     
+  
     return cell
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    return CGSize(width: view.frame.width, height: view.frame.height)
+    
+//    the minus 50 value is from the height of the MenuBar
+    return CGSize(width: view.frame.width, height: view.frame.height - 50)
   }
 
     
-////    this section dictates how many rows are created
-//    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        // return the amount of videos within the video array
-//
-////        pattern to get past an optional videos?, since this can only take non-optional values
-//        return videos?.count ?? 0
-//    }
-//
-//    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//
-////        need to define the cell to become a VideoCell
-//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellId", for: indexPath) as! VideoCell
-//
-//        cell.video = videos?[indexPath.item]
-//
-//        return cell
-//    }
-//
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-////        9/16 -> an aspect ratio math
-//        let height = (view.frame.width - 16 - 16) * 9/16
-////        68 -> sum of vertical pixel contraints
-//        return CGSize(width: view.frame.width, height: height + 16 + 88)
-//    }
-//
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-//        return 0
-//    }
 }
 

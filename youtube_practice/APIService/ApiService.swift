@@ -12,10 +12,28 @@ class Apiservice: NSObject {
   
   static let sharedInstance = Apiservice()
   
+  let baseUrl = "https://s3-us-west-2.amazonaws.com/youtubeassets/"
+  
   func fetchVideo(completion: @escaping (([Video]) -> ())){
     
+    fetchFeedForUrlString(urlString: "\(baseUrl)home.json", completion: completion)
+  }
+  
+  func fetchTrendingFeed(completion: @escaping (([Video]) -> ())){
+  
+    fetchFeedForUrlString(urlString: "\(baseUrl)trending.json", completion: completion)
+   
+  }
+  
+  func fetchSubscriptionFeed(completion: @escaping (([Video]) -> ())){
+    
+    fetchFeedForUrlString(urlString: "\(baseUrl)subscriptions.json", completion: completion)
+    
+  }
+  
+  func fetchFeedForUrlString(urlString: String, completion: @escaping ([Video]) -> ()){
     //      this URL is where the data is stored
-    let url = URL(string: "https://s3-us-west-2.amazonaws.com/youtubeassets/home.json")
+    let url = URL(string: urlString)
     
     URLSession.shared.dataTask(with: url!) { (data, response, error) in
       
